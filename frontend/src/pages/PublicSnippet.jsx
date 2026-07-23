@@ -1,189 +1,181 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Code, Copy, Check, Sparkles, ExternalLink, Calendar } from "lucide-react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { Copy, Check, Loader2, AlertCircle } from 'lucide-react';
+import api from '../lib/api';
+import Button from '../components/ui/Button';
+import TagPill from '../components/ui/TagPill';
 
 export default function PublicSnippet() {
   const { slug } = useParams();
   const [snippet, setSnippet] = useState(null);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    fetchPublicSnippet();
+    const fetchSnippet = async () => {
+      try {
+        const res = await api.get(`/s/${slug}`);
+        setSnippet(res.data);
+      } catch (err) {
+        setError(err.response?.status === 404 ? 'Snippet not found' : 'Failed to load snippet');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSnippet();
   }, [slug]);
 
-  const fetchPublicSnippet = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      // Call public endpoint without auth headers
-      const response = await axios.get(`http://localhost:8000/s/${slug}`);
-      setSnippet(response.data);
-    } catch (err) {
-      setError(
-        err.response?.data?.detail || 
-        "Public snippet not found or it has been set to private."
-      );
-    } finally {
-      setLoading(false);
+  const handleCopy = () => {
+    if (snippet) {
+      navigator.clipboard.writeText(snippet.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
     }
   };
 
-  const handleCopy = () => {
-    if (!snippet) return;
-    navigator.clipboard.writeText(snippet.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: '100vh', backgroundColor: 'var(--bg-primary)',
+      }}>
+        <Loader2 size={24} style={{ color: 'var(--orange-500)', animation: 'spin 1s linear infinite' }} />
+      </div>
+    );
+  }
 
-  const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  if (error) {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        minHeight: '100vh', backgroundColor: 'var(--bg-primary)', gap: '16px', padding: '24px',
+      }}>
+        <AlertCircle size={32} style={{ color: 'var(--text-muted)' }} />
+        <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>{error}</h2>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <Button variant="primary" size="sm">Go home</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-gray-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-[#0e1322]/80 backdrop-blur-md px-6 py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
-          <Code className="h-6 w-6 text-indigo-400" />
-          <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-            SnipLibrary
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
+      {/* Minimal navbar */}
+      <nav style={{
+        borderBottom: '1px solid var(--border-primary)',
+        padding: '0 24px',
+        height: '56px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        maxWidth: '800px',
+        margin: '0 auto',
+      }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+          <div style={{
+            width: '24px', height: '24px', borderRadius: '5px',
+            backgroundColor: 'var(--orange-500)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+              <rect x="2" y="2" width="10" height="1.5" rx="0.5" fill="white" />
+              <rect x="2" y="5.5" width="7" height="1.5" rx="0.5" fill="white" />
+              <rect x="2" y="9" width="10" height="1.5" rx="0.5" fill="white" />
+            </svg>
+          </div>
+          <span style={{ fontSize: '15px', fontWeight: 400, color: 'var(--text-primary)' }}>
+            snip<span style={{ fontWeight: 700, color: 'var(--orange-500)' }}>vault</span>
           </span>
         </Link>
-        <Link
-          to="/signup"
-          className="px-4 py-2 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-1.5"
-        >
-          Create Your Own <ExternalLink className="h-3 w-3" />
+        <Link to="/signup" style={{ textDecoration: 'none' }}>
+          <Button variant="primary" size="sm">Sign up free →</Button>
         </Link>
-      </header>
+      </nav>
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-3xl w-full mx-auto px-6 py-12 flex flex-col justify-center">
-        {loading ? (
-          <div className="text-center py-20 text-gray-500 font-medium">Loading public snippet...</div>
-        ) : error ? (
-          <div className="text-center py-16 border border-dashed border-gray-800 rounded-3xl p-8 max-w-md mx-auto">
-            <AlertIcon className="h-10 w-10 text-red-400/80 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-gray-300">Snippet Unavailable</h3>
-            <p className="text-sm text-gray-500 mt-2 mb-6 leading-relaxed">{error}</p>
-            <Link
-              to="/"
-              className="px-5 py-2.5 text-sm font-semibold rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white transition"
-            >
-              Go to Home Page
+      {/* Content */}
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px 64px' }}>
+        <div className="animate-fade-in">
+          {/* Title */}
+          <h1 className="heading-lg" style={{
+            fontSize: '28px',
+            color: 'var(--text-primary)',
+            marginBottom: '16px',
+          }}>
+            {snippet.title}
+          </h1>
+
+          {/* Meta */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '24px',
+            fontSize: '13px',
+            color: 'var(--text-muted)',
+          }}>
+            <span>{snippet.language !== 'plaintext' ? snippet.language : 'Plain text'}</span>
+            <span>·</span>
+            <span>{new Date(snippet.created_at).toLocaleDateString()}</span>
+          </div>
+
+          {/* Tags */}
+          {snippet.tags?.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '24px' }}>
+              {snippet.tags.map((tag, i) => (
+                <TagPill key={i} name={typeof tag === 'string' ? tag : tag.name} />
+              ))}
+            </div>
+          )}
+
+          {/* Content block */}
+          <div style={{
+            padding: '20px',
+            borderRadius: 'var(--radius-lg)',
+            backgroundColor: 'var(--bg-secondary)',
+            boxShadow: 'var(--shadow-card)',
+            fontSize: '14px',
+            fontFamily: snippet.language !== 'plaintext' ? 'monospace' : 'var(--font-sans)',
+            color: 'var(--text-primary)',
+            lineHeight: 1.7,
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            marginBottom: '24px',
+          }}>
+            {snippet.content}
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <Button variant="primary" onClick={handleCopy}>
+              {copied ? <Check size={15} /> : <Copy size={15} />}
+              {copied ? 'Copied!' : 'Copy to clipboard'}
+            </Button>
+            <Link to="/signup" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary">Save to my library</Button>
             </Link>
           </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Meta Info */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white mb-2">{snippet.title}</h1>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
-                  <span className="font-mono text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded border border-indigo-500/20">
-                    {snippet.language}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-3.5 w-3.5" /> {formatDate(snippet.created_at)}
-                  </span>
-                </div>
-              </div>
+        </div>
+      </div>
 
-              {/* Badges */}
-              <div className="flex flex-wrap gap-1.5">
-                {snippet.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="text-[10px] px-2.5 py-1 rounded-full bg-gray-900 border border-gray-800 text-gray-400 font-medium"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Code Box */}
-            <div className="relative bg-gray-950 rounded-2xl border border-gray-800 overflow-hidden shadow-2xl">
-              {/* Copy Bar */}
-              <div className="flex justify-between items-center px-6 py-3 border-b border-gray-900 bg-gray-900/40 select-none">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500">Shared Snippet</span>
-                <button
-                  onClick={handleCopy}
-                  className="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:border-gray-700/80 hover:text-white text-gray-400 transition text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-3.5 w-3.5 text-green-400" /> Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5" /> Copy Code
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Code Area */}
-              <div className="p-6 overflow-x-auto select-text">
-                <pre className="text-sm font-mono text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  <code>{snippet.content}</code>
-                </pre>
-              </div>
-            </div>
-
-            {/* CTA Banner */}
-            <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-950/40 via-slate-900/40 to-indigo-950/40 border border-indigo-500/20 flex flex-col md:flex-row items-center justify-between gap-4 mt-8 select-none">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-gray-200">Save Your Own Reusable Snippets</h4>
-                  <p className="text-xs text-gray-400">Keep your AI prompts and code templates in one central place.</p>
-                </div>
-              </div>
-              <Link
-                to="/signup"
-                className="px-4 py-2 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition text-center shrink-0"
-              >
-                Sign Up Free
-              </Link>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-800 bg-[#070b12] py-8 text-center text-xs text-gray-500 px-6 select-none">
-        <p>© 2026 SnipLibrary. Shareable Public link.</p>
-      </footer>
+      {/* Footer CTA */}
+      <div style={{
+        borderTop: '1px solid var(--border-primary)',
+        padding: '32px 24px',
+        textAlign: 'center',
+      }}>
+        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '12px' }}>
+          Shared via <span style={{ fontWeight: 600, color: 'var(--orange-500)' }}>SnipVault</span>
+        </p>
+        <Link to="/signup" style={{
+          fontSize: '13px',
+          color: 'var(--orange-500)',
+          textDecoration: 'none',
+          fontWeight: 500,
+        }}>
+          Build your own library →
+        </Link>
+      </div>
     </div>
-  );
-}
-
-// Simple fallback alert icon
-function AlertIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-      />
-    </svg>
   );
 }

@@ -84,6 +84,17 @@ def read_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
 
+@app.post("/cancel-subscription", response_model=schemas.UserResponse)
+def cancel_subscription(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    current_user.is_pro = False
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
 # --- Folder Routes ---
 
 @app.get("/folders", response_model=List[schemas.FolderResponse])

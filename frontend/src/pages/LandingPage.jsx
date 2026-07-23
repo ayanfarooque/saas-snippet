@@ -1,185 +1,541 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Sparkles, Check, X, Shield, Share2, Folder, Search, Code, ArrowRight } from "lucide-react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FolderOpen, Zap, Link2, Shield, Save, Tags, Search, Copy, Share2, Download, ArrowRight, Check, X as XIcon, Star } from 'lucide-react';
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
+import Button from '../components/ui/Button';
+import TagPill from '../components/ui/TagPill';
 
-export default function LandingPage() {
-  const token = localStorage.getItem("token");
-
+/* ============================================
+   SECTION 1.2 — Hero
+   ============================================ */
+function HeroSection() {
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-gray-100 flex flex-col selection:bg-indigo-500 selection:text-white">
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-[#0e1322] backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Code className="h-6 w-6 text-indigo-400" />
-          <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-            SnipLibrary
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          {token ? (
-            <Link
-              to="/dashboard"
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-2"
-            >
-              Dashboard <ArrowRight className="h-4 w-4" />
-            </Link>
-          ) : (
-            <>
-              <Link to="/login" className="text-sm font-semibold hover:text-indigo-400 transition">
-                Sign In
-              </Link>
-              <Link
-                to="/signup"
-                className="px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition"
-              >
-                Get Started
-              </Link>
-            </>
-          )}
-        </div>
-      </header>
+    <section style={{
+      position: 'relative',
+      backgroundColor: 'var(--bg-primary)',
+      overflow: 'hidden',
+      paddingTop: '80px',
+      paddingBottom: '60px',
+    }}>
+      {/* Orange glow orb */}
+      <div style={{
+        position: 'absolute',
+        top: '-120px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '600px',
+        height: '500px',
+        background: 'radial-gradient(ellipse, rgba(249,115,22,0.18) 0%, transparent 70%)',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }} />
 
-      {/* Hero Section */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-6 py-20 max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-6">
-          <Sparkles className="h-3 w-3" /> Zero to Subscriber - Launch in a Day
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
+        {/* Badge */}
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '6px 14px',
+          borderRadius: '99px',
+          backgroundColor: 'var(--orange-glow)',
+          border: '1px solid rgba(249,115,22,0.2)',
+          fontSize: '13px',
+          fontWeight: 500,
+          color: 'var(--orange-400)',
+          marginBottom: '28px',
+        }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--orange-500)' }} />
+          Now with AI-powered search
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
-          Save, Tag, and Search Your <br />
-          <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
-            Reusable Code Snippets & Prompts
-          </span>
+
+        {/* Headline */}
+        <h1 className="heading-xl" style={{ fontSize: 'clamp(36px, 5vw, 52px)', marginBottom: '20px' }}>
+          Your prompts.<br />
+          <span style={{ color: 'var(--orange-500)' }}>Always ready.</span><br />
+          <span style={{ color: 'var(--text-muted)' }}>Never lost.</span>
         </h1>
-        <p className="text-gray-400 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
-          The ultimate productivity companion for developers and AI prompt engineers. Keep your best snippets accessible, organized, and shareable.
+
+        {/* Subtext */}
+        <p style={{
+          fontSize: '17px',
+          color: 'var(--text-secondary)',
+          maxWidth: '480px',
+          margin: '0 auto 32px',
+          lineHeight: 1.6,
+        }}>
+          Save, tag, and search your AI prompts and code snippets.
+          Share with your team. Access anywhere.
         </p>
-        <div className="flex gap-4">
-          <Link
-            to={token ? "/dashboard" : "/signup"}
-            className="px-8 py-4 text-base font-semibold rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-600/25 transition duration-200"
-          >
-            Create Free Account
+
+        {/* CTA buttons */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <Link to="/signup" style={{ textDecoration: 'none' }}>
+            <Button variant="primary" size="lg">Start for free →</Button>
           </Link>
-          <a
-            href="#pricing"
-            className="px-8 py-4 text-base font-semibold rounded-xl border border-gray-700 bg-gray-800/40 hover:bg-gray-800 text-gray-300 transition duration-200"
-          >
-            View Pricing
+          <a href="#features" style={{ textDecoration: 'none' }}>
+            <Button variant="secondary" size="lg">View demo ↗</Button>
           </a>
         </div>
-      </section>
 
-      {/* Features Grid */}
-      <section className="py-20 px-6 border-t border-gray-800/60 bg-[#0c111e]">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Packed with Hackathon-Speed Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-2xl bg-gray-900/50 border border-gray-800/60">
-              <div className="h-12 w-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-5">
-                <Search className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Lightning Search</h3>
-              <p className="text-gray-400 text-sm">
-                Instantly filter your snippets by title, content, or tags. Find any code or prompt in milliseconds.
-              </p>
+        {/* Hero Visual — Floating app mockup */}
+        <div style={{
+          marginTop: '56px',
+          borderRadius: 'var(--radius-lg)',
+          backgroundColor: 'var(--bg-secondary)',
+          boxShadow: '0 0 0 1px rgba(249,115,22,0.15), 0 24px 48px rgba(0,0,0,0.3)',
+          overflow: 'hidden',
+          maxWidth: '640px',
+          margin: '56px auto 0',
+        }}>
+          {/* macOS chrome */}
+          <div style={{
+            padding: '12px 16px',
+            borderBottom: '1px solid var(--border-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#FF5F57' }} />
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#FEBC2E' }} />
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#28C840' }} />
             </div>
-            <div className="p-6 rounded-2xl bg-gray-900/50 border border-gray-800/60">
-              <div className="h-12 w-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-5">
-                <Folder className="h-6 w-6" />
+            <span style={{ flex: 1, textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)', fontWeight: 500 }}>
+              My Snippet Library — 847 saved
+            </span>
+          </div>
+
+          {/* Snippet rows */}
+          <div style={{ padding: '4px' }}>
+            {[
+              {
+                title: 'ChatGPT — Detailed code reviewer',
+                preview: 'You are an expert code reviewer. Analyze the code for bugs, performance issues, and suggest improvements...',
+                tags: ['AI prompt', 'code review', 'GPT-4'],
+              },
+              {
+                title: 'SQL — Paginated query template',
+                preview: 'SELECT * FROM users WHERE active = true ORDER BY created_at DESC LIMIT :limit OFFSET :offset;',
+                tags: ['SQL', 'pagination'],
+              },
+              {
+                title: 'Meeting summary prompt',
+                preview: 'Summarize the following meeting transcript into key decisions, action items, and follow-ups...',
+                tags: ['AI prompt', 'meetings'],
+              },
+            ].map((s, i) => (
+              <div key={i} style={{
+                padding: '14px 16px',
+                borderRadius: 'var(--radius-md)',
+                transition: 'var(--transition-fast)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                borderBottom: i < 2 ? '1px solid var(--border-primary)' : 'none',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>{s.title}</span>
+                  <div style={{ display: 'flex', gap: '8px', opacity: 0.4 }}>
+                    <Copy size={13} style={{ color: 'var(--text-muted)' }} />
+                    <Share2 size={13} style={{ color: 'var(--text-muted)' }} />
+                  </div>
+                </div>
+                <span style={{ fontSize: '12px', fontFamily: 'monospace', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {s.preview}
+                </span>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {s.tags.map(tag => <TagPill key={tag} name={tag} size="sm" />)}
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-2">Folder Organization</h3>
-              <p className="text-gray-400 text-sm">
-                Group snippets into folders for project-specific structures. Access clean directories anytime (Pro).
-              </p>
-            </div>
-            <div className="p-6 rounded-2xl bg-gray-900/50 border border-gray-800/60">
-              <div className="h-12 w-12 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 mb-5">
-                <Share2 className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Public Share Links</h3>
-              <p className="text-gray-400 text-sm">
-                Generate lightweight, readable public view links for any snippet. Share them with teammates or customers (Pro).
-              </p>
-            </div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Pricing Table */}
-      <section id="pricing" className="py-20 px-6 max-w-5xl mx-auto w-full">
-        <h2 className="text-4xl font-extrabold text-center mb-4">Transparent, Simple Pricing</h2>
-        <p className="text-gray-400 text-center mb-16 max-w-md mx-auto">
-          Start for free, upgrade when you need unlimited power.
+/* ============================================
+   SECTION 1.3 — Feature Strip
+   ============================================ */
+function FeatureStrip() {
+  const items = [
+    { icon: '📁', label: 'Organize', desc: 'Tags, folders, collections' },
+    { icon: '⚡', label: 'Instant search', desc: 'Full-text across all snippets' },
+    { icon: '🔗', label: 'Share links', desc: 'Public permalink per snippet' },
+    { icon: '🔒', label: 'Private by default', desc: 'You control visibility' },
+  ];
+
+  return (
+    <section style={{
+      backgroundColor: 'var(--bg-primary)',
+      borderTop: '1px solid var(--border-primary)',
+      borderBottom: '1px solid var(--border-primary)',
+    }}>
+      <div style={{
+        maxWidth: '1000px',
+        margin: '0 auto',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      }}>
+        {items.map((item, i) => (
+          <div key={i} style={{
+            padding: '32px 24px',
+            textAlign: 'center',
+            borderRight: i < items.length - 1 ? '1px solid var(--border-primary)' : 'none',
+          }}>
+            <div style={{ fontSize: '28px', marginBottom: '10px' }}>{item.icon}</div>
+            <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>{item.label}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{item.desc}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ============================================
+   SECTION 1.4 — Stats Strip
+   ============================================ */
+function StatsStrip() {
+  const stats = [
+    { number: '12,400+', label: 'Snippets saved' },
+    { number: '2,800+', label: 'Active users' },
+    { number: '4.9 ★', label: 'Average rating' },
+    { number: '99.9%', label: 'Uptime' },
+  ];
+
+  return (
+    <section style={{
+      background: 'linear-gradient(180deg, var(--bg-primary) 0%, var(--orange-glow) 50%, var(--bg-tertiary) 100%)',
+      padding: '48px 24px',
+    }}>
+      <div style={{
+        maxWidth: '800px',
+        margin: '0 auto',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gap: '24px',
+        textAlign: 'center',
+      }}>
+        {stats.map((s, i) => (
+          <div key={i}>
+            <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--orange-500)', letterSpacing: '-0.02em' }}>{s.number}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ============================================
+   SECTION 1.5 — Features Deep-Dive
+   ============================================ */
+function FeaturesSection() {
+  const features = [
+    { icon: Save, title: 'Save instantly', desc: 'Keyboard shortcut to save. Browser extension coming soon. Capture snippets in seconds.' },
+    { icon: Tags, title: 'Tag & organize', desc: 'Unlimited tags on Pro, color-coded by category. Find anything in one click.' },
+    { icon: Search, title: 'Full-text search', desc: 'Search across titles, content, and tags simultaneously. Lightning fast results.' },
+    { icon: Copy, title: 'One-click copy', desc: 'Copy any snippet to clipboard instantly. Track copy usage on Pro plan.' },
+    { icon: Share2, title: 'Shareable links', desc: 'Generate a unique public URL for any snippet. Share with anyone, no login needed.' },
+    { icon: Download, title: 'Export anytime', desc: 'Download all snippets as JSON or CSV. Your data belongs to you, always.' },
+  ];
+
+  return (
+    <section id="features" style={{
+      backgroundColor: 'var(--bg-tertiary)',
+      padding: '80px 24px',
+    }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div style={{
+            fontSize: '12px',
+            fontWeight: 600,
+            color: 'var(--orange-500)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            marginBottom: '12px',
+          }}>
+            FEATURES
+          </div>
+          <h2 className="heading-lg" style={{ fontSize: '32px', color: 'var(--text-primary)' }}>
+            Everything you need, nothing you don&apos;t
+          </h2>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '24px',
+        }}>
+          {features.map((f, i) => (
+            <div key={i} style={{
+              padding: '24px',
+              borderRadius: 'var(--radius-lg)',
+              backgroundColor: 'var(--bg-secondary)',
+              boxShadow: 'var(--shadow-card)',
+              transition: 'var(--transition-fast)',
+            }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--orange-glow)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '16px',
+              }}>
+                <f.icon size={18} style={{ color: 'var(--orange-500)' }} />
+              </div>
+              <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>{f.title}</h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================
+   SECTION 1.6 — How It Works
+   ============================================ */
+function HowItWorks() {
+  const steps = [
+    { num: '1', title: 'Sign up', desc: 'Create your free account, no credit card needed.' },
+    { num: '2', title: 'Save your first snippet', desc: 'Paste any prompt, code, or text. Add tags to organize.' },
+    { num: '3', title: 'Access anywhere', desc: 'Search, copy, share. Never lose a prompt again.' },
+  ];
+
+  return (
+    <section style={{
+      backgroundColor: 'var(--bg-tertiary)',
+      padding: '64px 24px 80px',
+    }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+        <h2 className="heading-lg" style={{ fontSize: '28px', marginBottom: '48px', color: 'var(--text-primary)' }}>
+          Up and running in 60 seconds
+        </h2>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '32px',
+          position: 'relative',
+        }}>
+          {steps.map((step, i) => (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--orange-glow)',
+                border: '2px solid var(--orange-500)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                fontWeight: 700,
+                color: 'var(--orange-500)',
+              }}>
+                {step.num}
+              </div>
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>{step.title}</h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================
+   SECTION 1.7 — Pricing
+   ============================================ */
+function PricingSection() {
+  return (
+    <section id="pricing" style={{
+      backgroundColor: 'var(--bg-tertiary)',
+      padding: '80px 24px',
+    }}>
+      <div style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
+        <div style={{
+          fontSize: '12px',
+          fontWeight: 600,
+          color: 'var(--orange-500)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          marginBottom: '12px',
+        }}>
+          PRICING
+        </div>
+        <h2 className="heading-lg" style={{ fontSize: '32px', color: 'var(--text-primary)', marginBottom: '8px' }}>
+          Simple, honest pricing
+        </h2>
+        <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '40px' }}>
+          Start free. Upgrade when you need more.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Free Tier */}
-          <div className="p-8 rounded-3xl bg-gray-900/40 border border-gray-800 flex flex-col justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-200 mb-2">Free Starter</h3>
-              <p className="text-gray-400 text-sm mb-6">Perfect for testing the waters.</p>
-              <div className="text-4xl font-black mb-6">$0 <span className="text-sm font-normal text-gray-500">/ forever</span></div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Check className="h-4 w-4 text-green-400 shrink-0" /> Max 10 Snippets
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Check className="h-4 w-4 text-green-400 shrink-0" /> Max 3 Tags per Snippet
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-500 line-through">
-                  <X className="h-4 w-4 text-red-500 shrink-0" /> Folder Organization
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-500 line-through">
-                  <X className="h-4 w-4 text-red-500 shrink-0" /> Public Shareable Links
-                </li>
-              </ul>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '20px',
+        }}>
+          {/* Free card */}
+          <div style={{
+            padding: '32px 28px',
+            borderRadius: 'var(--radius-lg)',
+            backgroundColor: 'var(--bg-secondary)',
+            boxShadow: 'var(--shadow-card)',
+            textAlign: 'left',
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>Starter</h3>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '4px' }}>
+              <span style={{ fontSize: '36px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>$0</span>
+              <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>/ month</span>
             </div>
-            <Link
-              to={token ? "/dashboard" : "/signup"}
-              className="w-full py-3 text-center rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold transition"
-            >
-              {token ? "Go to Dashboard" : "Get Started"}
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '24px' }}>Perfect for personal use</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px' }}>
+              {[
+                { text: '10 snippets', ok: true },
+                { text: '3 tags per snippet', ok: true },
+                { text: 'Title search', ok: true },
+                { text: 'Public share links', ok: false },
+                { text: 'Folders', ok: false },
+                { text: 'Export', ok: false },
+              ].map((f, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                  {f.ok
+                    ? <Check size={14} style={{ color: 'var(--orange-500)', flexShrink: 0 }} />
+                    : <XIcon size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+                  }
+                  <span style={{ color: f.ok ? 'var(--text-primary)' : 'var(--text-muted)' }}>{f.text}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link to="/signup" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary" fullWidth>Get started free</Button>
             </Link>
           </div>
 
-          {/* Pro Tier */}
-          <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-950/40 to-slate-900/40 border-2 border-indigo-500/80 flex flex-col justify-between relative overflow-hidden">
-            <div className="absolute top-4 right-4 px-2.5 py-1 rounded-md bg-indigo-500 text-white text-xs font-semibold">
-              POPULAR
+          {/* Pro card */}
+          <div style={{
+            position: 'relative',
+            padding: '32px 28px',
+            borderRadius: 'var(--radius-lg)',
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1.5px solid var(--orange-500)',
+            textAlign: 'left',
+          }}>
+            {/* Most popular badge */}
+            <div style={{
+              position: 'absolute',
+              top: '-12px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              padding: '4px 14px',
+              borderRadius: '99px',
+              backgroundColor: 'var(--orange-500)',
+              color: '#FFFFFF',
+              fontSize: '11px',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}>
+              Most popular
             </div>
-            <div>
-              <h3 className="text-2xl font-bold text-indigo-300 mb-2">Snippet Pro</h3>
-              <p className="text-gray-400 text-sm mb-6">For power users and prompt masters.</p>
-              <div className="text-4xl font-black mb-6">$9 <span className="text-sm font-normal text-gray-500">/ month</span></div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Check className="h-4 w-4 text-indigo-400 shrink-0" /> Unlimited Snippets & Prompts
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Check className="h-4 w-4 text-indigo-400 shrink-0" /> Unlimited Tags
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Check className="h-4 w-4 text-indigo-400 shrink-0" /> Full Folder Hierarchy
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Check className="h-4 w-4 text-indigo-400 shrink-0" /> Shareable /s/[slug] Public Links
-                </li>
-              </ul>
+
+            <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>Pro</h3>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '4px' }}>
+              <span style={{ fontSize: '36px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>$9</span>
+              <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>/ month</span>
             </div>
-            <Link
-              to={token ? "/dashboard" : "/signup"}
-              className="w-full py-3 text-center rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold shadow-lg shadow-indigo-600/20 transition"
-            >
-              Upgrade to Pro
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '24px' }}>For power users and teams</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px' }}>
+              {[
+                'Unlimited snippets',
+                'Unlimited tags',
+                'Full-text search',
+                'Public share links',
+                'Folders & collections',
+                'JSON / CSV export',
+              ].map((f, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                  <Check size={14} style={{ color: 'var(--orange-500)', flexShrink: 0 }} />
+                  <span style={{ color: 'var(--text-primary)' }}>{f}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link to="/signup" style={{ textDecoration: 'none' }}>
+              <Button variant="primary" fullWidth>Upgrade to Pro →</Button>
             </Link>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Footer */}
-      <footer className="border-t border-gray-800 bg-[#070b12] py-8 text-center text-xs text-gray-500 px-6">
-        <p>© 2026 SnipLibrary. Hackathon Project for "Zero to Subscriber — Full-Stack SaaS in a Day".</p>
-      </footer>
+/* ============================================
+   SECTION 1.8 — CTA Banner
+   ============================================ */
+function CTABanner() {
+  return (
+    <section style={{
+      position: 'relative',
+      backgroundColor: 'var(--bg-primary)',
+      padding: '80px 24px',
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '500px',
+        height: '400px',
+        background: 'radial-gradient(ellipse, rgba(249,115,22,0.12) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
+        <h2 className="heading-lg" style={{ fontSize: '32px', color: 'var(--text-primary)', marginBottom: '12px' }}>
+          Start saving your best prompts today.
+        </h2>
+        <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '28px' }}>
+          Join 2,800+ developers, designers, and writers.
+        </p>
+        <Link to="/signup" style={{ textDecoration: 'none' }}>
+          <Button variant="primary" size="lg">Create free account →</Button>
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================
+   LANDING PAGE — Assembled
+   ============================================ */
+export default function Landing() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
+      <Navbar variant="landing" />
+      <HeroSection />
+      <FeatureStrip />
+      <StatsStrip />
+      <FeaturesSection />
+      <HowItWorks />
+      <PricingSection />
+      <CTABanner />
+      <Footer />
     </div>
   );
 }
