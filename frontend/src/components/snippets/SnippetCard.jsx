@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copy, Check, Edit3, Share2, MoreHorizontal, Trash2, Star } from 'lucide-react';
 import TagPill from '../ui/TagPill';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 function timeAgo(dateStr) {
   const now = new Date();
@@ -16,8 +18,11 @@ function timeAgo(dateStr) {
 
 export default function SnippetCard({ snippet, onDelete, onCopy, isFavorite, onToggleFavorite }) {
   const [copied, setCopied] = useState(false);
+  const [copiedShare, setCopiedShare] = useState(false);
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
+  const { isPro } = useAuth();
+  const { addToast } = useToast();
 
   const handleCopy = (e) => {
     e.stopPropagation();
@@ -34,9 +39,15 @@ export default function SnippetCard({ snippet, onDelete, onCopy, isFavorite, onT
 
   const handleShare = (e) => {
     e.stopPropagation();
-    if (snippet.slug) {
+    if (snippet.is_public && snippet.slug) {
       const url = `${window.location.origin}/s/${snippet.slug}`;
       navigator.clipboard.writeText(url);
+      setCopiedShare(true);
+      setTimeout(() => setCopiedShare(false), 1500);
+      addToast('Share link copied to clipboard!', 'success');
+    } else {
+      addToast('Please enable public sharing first', 'error');
+      navigate(`/dashboard/${snippet.id}`);
     }
   };
 
@@ -183,6 +194,23 @@ export default function SnippetCard({ snippet, onDelete, onCopy, isFavorite, onT
           >
             <Edit3 size={13} />
           </button>
+          
+          {isPro && (
+            <button
+              onClick={handleShare}
+              title={snippet.is_public ? (copiedShare ? 'Copied link!' : 'Copy share link') : 'Enable public sharing'}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '5px', borderRadius: 'var(--radius-sm)', border: 'none',
+                backgroundColor: copiedShare ? 'var(--orange-500)' : 'var(--bg-tertiary)', 
+                color: copiedShare ? '#fff' : 'var(--text-muted)',
+                cursor: 'pointer', transition: 'var(--transition-fast)',
+              }}
+            >
+              {copiedShare ? <Check size={13} /> : <Share2 size={13} />}
+            </button>
+          )}
+
           <button
             onClick={handleDelete}
             title="Delete"

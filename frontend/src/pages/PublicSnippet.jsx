@@ -151,9 +151,18 @@ export default function PublicSnippet() {
               {copied ? <Check size={15} /> : <Copy size={15} />}
               {copied ? 'Copied!' : 'Copy to clipboard'}
             </Button>
-            <Link to="/signup" style={{ textDecoration: 'none' }}>
-              <Button variant="secondary">Save to my library</Button>
-            </Link>
+            <Button variant="secondary" onClick={() => {
+              sessionStorage.setItem('snipvault_pending_save', JSON.stringify({
+                title: snippet.title,
+                content: snippet.content,
+                language: snippet.language,
+                tags: snippet.tags?.map(t => typeof t === 'string' ? t : t.name) || [],
+                is_public: false,
+              }));
+              window.location.href = '/signup';
+            }}>
+              Save to my library
+            </Button>
           </div>
         </div>
       </div>

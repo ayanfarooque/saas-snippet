@@ -75,11 +75,27 @@ export default function Dashboard() {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
+
+      // Check for pending snippet to save
+      const pendingSave = sessionStorage.getItem('snipvault_pending_save');
+      if (pendingSave) {
+        // Immediately remove it to prevent double-firing in React 18 Strict Mode
+        sessionStorage.removeItem('snipvault_pending_save');
+        try {
+          const data = JSON.parse(pendingSave);
+          await api.post('/snippets', data);
+          addToast('Saved to your library!', 'success');
+        } catch (err) {
+          console.error('Failed to save pending snippet:', err);
+          addToast(err.response?.data?.detail || 'Failed to save pending snippet', 'error');
+        }
+      }
+
       await fetchSnippets();
       setLoading(false);
     };
     load();
-  }, [fetchSnippets]);
+  }, [fetchSnippets, addToast]);
 
   const handleDelete = async (id) => {
     try {
