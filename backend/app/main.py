@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 from app import models, schemas, crud
 from app.database import engine, Base, get_db
-from app.auth import get_current_user, create_access_token, verify_password
+from app.auth import get_current_user, create_access_token, verify_password, get_password_hash
 
 load_dotenv()
 
@@ -48,17 +48,18 @@ def read_root():
 
 # --- Auth Routes ---
 
-@app.post("/signup", response_model=schemas.Token)
-def signup(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user_in.email)
+@app.post("/signup", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
+def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
-    user = crud.create_user(db, user_in)
-    access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+        raise HTTPException(status_code=400, detail="Email is already registered")
+    
+    hashed_pwd = get_password_hash(user.password)
+    new_user = models.User(email=user.email, hashed_password=hashed_pwd)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
 
 
 @app.post("/login", response_model=schemas.Token)

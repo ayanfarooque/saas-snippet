@@ -17,11 +17,26 @@ export default function Signup() {
 
     try {
       const response = await api.post("/signup", { email, password });
-      localStorage.setItem("token", response.data.access_token);
-      navigate("/dashboard");
+      
+      let token = response.data?.access_token;
+      
+      // If signup response doesn't contain a token, log in automatically
+      if (!token) {
+        const loginResponse = await api.post("/login", { email, password });
+        token = loginResponse.data?.access_token;
+      }
+
+      if (token) {
+        localStorage.setItem("token", token);
+        navigate("/dashboard");
+      } else {
+        throw new Error("Could not retrieve authentication token.");
+      }
     } catch (err) {
+      console.error("Signup error details:", err);
       setError(
         err.response?.data?.detail || 
+        err.message ||
         "An error occurred during sign up. Please try again."
       );
     } finally {
