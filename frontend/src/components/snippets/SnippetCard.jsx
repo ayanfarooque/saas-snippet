@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Copy, Check, Edit3, Share2, MoreHorizontal, Trash2 } from 'lucide-react';
+import { Copy, Check, Edit3, Share2, MoreHorizontal, Trash2, Star } from 'lucide-react';
 import TagPill from '../ui/TagPill';
 
 function timeAgo(dateStr) {
@@ -14,7 +14,7 @@ function timeAgo(dateStr) {
   return d.toLocaleDateString();
 }
 
-export default function SnippetCard({ snippet, onDelete, onCopy }) {
+export default function SnippetCard({ snippet, onDelete, onCopy, isFavorite, onToggleFavorite }) {
   const [copied, setCopied] = useState(false);
   const [hovered, setHovered] = useState(false);
   const navigate = useNavigate();
@@ -78,6 +78,33 @@ export default function SnippetCard({ snippet, onDelete, onCopy }) {
         }}>
           {snippet.title}
         </h3>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite?.(snippet.id);
+          }}
+          title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '2px',
+            color: isFavorite ? 'var(--orange-500)' : 'var(--text-muted)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'transform 0.15s ease',
+            transform: hovered ? 'scale(1.1)' : 'scale(1)',
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--orange-500)'}
+          onMouseLeave={e => e.currentTarget.style.color = isFavorite ? 'var(--orange-500)' : 'var(--text-muted)'}
+        >
+          <Star 
+            size={16} 
+            fill={isFavorite ? 'currentColor' : 'none'} 
+            strokeWidth={isFavorite ? 0 : 2}
+          />
+        </button>
       </div>
 
       {/* Content preview */}
@@ -156,20 +183,6 @@ export default function SnippetCard({ snippet, onDelete, onCopy }) {
           >
             <Edit3 size={13} />
           </button>
-          {snippet.slug && (
-            <button
-              onClick={handleShare}
-              title="Copy share link"
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '5px', borderRadius: 'var(--radius-sm)', border: 'none',
-                backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)',
-                cursor: 'pointer', transition: 'var(--transition-fast)',
-              }}
-            >
-              <Share2 size={13} />
-            </button>
-          )}
           <button
             onClick={handleDelete}
             title="Delete"

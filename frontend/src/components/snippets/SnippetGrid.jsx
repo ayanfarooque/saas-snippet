@@ -4,7 +4,7 @@ import SnippetCard from './SnippetCard';
 import SkeletonCard from '../ui/SkeletonCard';
 import Button from '../ui/Button';
 
-export default function SnippetGrid({ snippets, loading, onDelete, onCopy, onNew }) {
+export default function SnippetGrid({ snippets, loading, onDelete, onCopy, onNew, favoriteIds = [], onToggleFavorite }) {
   if (loading) {
     return (
       <div style={{
@@ -65,6 +65,8 @@ export default function SnippetGrid({ snippets, loading, onDelete, onCopy, onNew
           snippet={snippet}
           onDelete={onDelete}
           onCopy={onCopy}
+          isFavorite={favoriteIds.includes(snippet.id)}
+          onToggleFavorite={onToggleFavorite}
         />
       ))}
     </div>

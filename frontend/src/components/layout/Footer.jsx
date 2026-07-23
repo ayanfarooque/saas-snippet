@@ -16,7 +16,6 @@ const linkGroups = [
     links: [
       { label: 'About', href: '#' },
       { label: 'Blog', href: '#' },
-      { label: 'Careers', href: '#' },
     ],
   },
   {

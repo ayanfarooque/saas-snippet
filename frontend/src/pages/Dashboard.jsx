@@ -24,6 +24,29 @@ export default function Dashboard() {
   const searchParams = new URLSearchParams(window.location.search);
   const activeTagName = searchParams.get('tag');
   const activeFolderId = searchParams.get('folder_id') ? parseInt(searchParams.get('folder_id')) : null;
+  const isFavorites = window.location.pathname.includes('favorites');
+
+  const [favoriteIds, setFavoriteIds] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('snipvault_favorites') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('snipvault_favorites', JSON.stringify(favoriteIds));
+  }, [favoriteIds]);
+
+  const handleToggleFavorite = useCallback((id) => {
+    setFavoriteIds(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(fId => fId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  }, []);
 
   const debouncedSearch = useDebounce(searchQuery, 300);
 
@@ -35,6 +58,11 @@ export default function Dashboard() {
       if (activeFolderId) url += `folder_id=${activeFolderId}&`;
       const res = await api.get(url);
       let data = res.data || [];
+      
+      if (isFavorites) {
+        data = data.filter(s => favoriteIds.includes(s.id));
+      }
+      
       if (sortOrder === 'oldest') data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
       else if (sortOrder === 'az') data.sort((a, b) => a.title.localeCompare(b.title));
       else data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -42,7 +70,7 @@ export default function Dashboard() {
     } catch (err) {
       console.error('Failed to fetch snippets:', err);
     }
-  }, [debouncedSearch, activeTagName, activeFolderId, sortOrder]);
+  }, [debouncedSearch, activeTagName, activeFolderId, sortOrder, isFavorites, favoriteIds]);
 
   useEffect(() => {
     const load = async () => {
@@ -160,6 +188,8 @@ export default function Dashboard() {
           onDelete={handleDelete}
           onCopy={handleCopy}
           onNew={handleNewSnippet}
+          favoriteIds={favoriteIds}
+          onToggleFavorite={handleToggleFavorite}
         />
       </div>
 

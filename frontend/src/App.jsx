@@ -57,7 +57,7 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
           <Route path="new" element={<NewSnippet />} />
-          <Route path="favorites" element={<DashboardPlaceholder />} />
+          <Route path="favorites" element={<Dashboard />} />
           <Route path="trash" element={<DashboardPlaceholder />} />
           <Route path=":id" element={<EditSnippet />} />
         </Route>
