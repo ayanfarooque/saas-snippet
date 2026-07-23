@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://saas-snippet-production.up.railway.app',
+  baseURL: import.meta.env.VITE_API_URL || 'https://saas-snippet-production.up.railway.app',
 });
 
 API.interceptors.request.use((config) => {
@@ -11,5 +11,15 @@ API.interceptors.request.use((config) => {
   }
   return config;
 });
+
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default API;
