@@ -8,16 +8,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
 COPY . .
 
-# Expose port (Railway passes dynamic port in $PORT)
-ENV PORT=8000
-EXPOSE $PORT
-
-# Start application
+# Ensure uvicorn binds to 0.0.0.0 and reads Railway's dynamic PORT
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
