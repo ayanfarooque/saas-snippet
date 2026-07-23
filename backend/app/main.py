@@ -28,6 +28,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 2. Catch-all preflight handler to prevent 502 on OPTIONS requests
+@app.options("/{full_path:path}")
+def options_handler(full_path: str):
+    return Response(status_code=status.HTTP_200_OK)
+
 # Configure Razorpay
 razorpay_client = razorpay.Client(
     auth=(os.getenv("RAZORPAY_KEY_ID", "rzp_test_placeholder"), os.getenv("RAZORPAY_KEY_SECRET", "secret_placeholder"))
